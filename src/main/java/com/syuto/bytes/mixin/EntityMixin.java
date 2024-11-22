@@ -10,8 +10,8 @@ public class EntityMixin {
      * @author scale
      * @reason lol xd!!!
      */
-    @Overwrite
-    public boolean isGlowing() {
-        return true;
-    }
+    //@Overwrite
+    //public boolean isGlowing() {
+    //    return true;
+    //}
 }
