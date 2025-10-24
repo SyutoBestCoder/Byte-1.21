@@ -262,7 +262,7 @@ public class RenderUtils {
                 (int) x,
                 (int) y,
                 color,
-                false
+                true
 
         );
 
