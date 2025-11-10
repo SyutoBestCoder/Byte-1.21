@@ -20,18 +20,27 @@ public class PacketReceivedMixin {
 
 
     @Inject(
-            at = @At("HEAD"),
             method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V",
+            at = @At("HEAD"),
             cancellable = true
     )
-    public void handlePacket(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
-        PacketReceivedEvent e = new PacketReceivedEvent(packet);
-        Byte.INSTANCE.eventBus.post(e);
+    private void onPacketRead(ChannelHandlerContext ctx, Packet<?> packet, CallbackInfo ci) {
+        PacketReceivedEvent event = new PacketReceivedEvent(packet);
+        Byte.INSTANCE.eventBus.post(event);
 
-        if (e.isCanceled()) {
+        if (event.isCanceled()) {
             ci.cancel();
+            return;
+        }
+
+        Packet<?> newPacket = event.getPacket();
+        if (newPacket != packet) {
+            ci.cancel();
+
+            ctx.fireChannelRead(newPacket);
         }
     }
+
 
     /*@Inject(at = @At("HEAD"), method = "send", cancellable = true)
     public void handlePacket(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {

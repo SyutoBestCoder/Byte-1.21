@@ -6,11 +6,18 @@ import com.syuto.bytes.eventbus.impl.PreUpdateEvent;
 import com.syuto.bytes.eventbus.impl.WorldJoinEvent;
 import com.syuto.bytes.mixin.SendPacketMixinAccessor;
 import com.syuto.bytes.module.Module;
+import com.syuto.bytes.module.ModuleManager;
 import com.syuto.bytes.module.api.Category;
+import com.syuto.bytes.module.impl.movement.Speed;
 import com.syuto.bytes.setting.impl.ModeSetting;
 import com.syuto.bytes.utils.impl.client.ChatUtils;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 
 import java.util.ArrayList;
 
@@ -39,10 +46,6 @@ public class Disabler extends Module {
                 ticks = 0;
                 ChatUtils.print("Disabling..");
             }
-        } else if (modes.getValue().equals("CubeCraft")) {
-            if (event.getEntityId() == mc.player.getId()) {
-                id = -20; //starting id of grim
-            }
         }
 
     }
@@ -50,18 +53,29 @@ public class Disabler extends Module {
     @EventHandler
     public void onPacketSent(PacketSentEvent event) {
         if (modes.getValue().equals("Vulcan")) {
+
             if (event.getPacket() instanceof CommonPongC2SPacket) {
                 if (accept) {
                     ChatUtils.print("Cancel " + ticks);
                     event.setCanceled(true);
                 }
             }
-        } else if (modes.getValue().equals("CubeCraft")) {
-            if (event.getPacket() instanceof CommonPongC2SPacket c0f) {
-                if (c0f.getParameter() > 0) {
-                    CommonPongC2SPacket a = new CommonPongC2SPacket((int) (Math.random() * 100000));
-                    packetList.add(a);
-                    //ChatUtils.print("CC " + a.getParameter());
+        }
+        if (modes.getValue().equals("CubeCraft")) {
+            if (event.getPacket() instanceof CommonPongC2SPacket) {
+                synchronized (packetList) {
+                    packetList.add(event.getPacket());
+                }
+                event.setCanceled(true);
+            }
+        }
+
+        Speed speedModule = ModuleManager.getModule(Speed.class);
+        if (speedModule != null && speedModule.isEnabled()) {
+            if (event.getPacket() instanceof ClientCommandC2SPacket commandC2SPacket) {
+                ClientCommandC2SPacket.Mode mode = commandC2SPacket.getMode();
+                if (mode == ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY || mode == ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY) {
+                    ChatUtils.print("Canceled");
                     event.setCanceled(true);
                 }
             }
@@ -78,11 +92,14 @@ public class Disabler extends Module {
                 ChatUtils.print("if you didn't get disconnected relog.");
                 reset();
             }
-        } else if (modes.getValue().equals("CubeCraft")) {
+        }
+        if (modes.getValue().equals("CubeCraft")) {
             if (!packetList.isEmpty()) ticks++;
 
-            if (ticks % 100 == 0) {
+            if (ticks >= 50) {
                 clear();
+                ChatUtils.print("s");
+                ticks = 0;
             }
         }
     }

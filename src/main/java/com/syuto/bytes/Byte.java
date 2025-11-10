@@ -13,6 +13,8 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class Byte implements ModInitializer {
 
 	public static final String MOD_ID = "byte";
@@ -43,6 +45,8 @@ public class Byte implements ModInitializer {
 	public void onInitialize() {
         final long time = System.currentTimeMillis();
 		ModuleManager.registerModules();
+        //start the http server after modules have been initialized
+
         LOGGER.info("Initialized {} in {}ms.", NAME, System.currentTimeMillis() - time);
     }
 

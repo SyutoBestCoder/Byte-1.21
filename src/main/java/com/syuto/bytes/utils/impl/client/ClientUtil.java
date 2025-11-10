@@ -2,6 +2,8 @@ package com.syuto.bytes.utils.impl.client;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.syuto.bytes.Byte.mc;
+
 public class ClientUtil {
 
     public static void crash() {
@@ -12,6 +14,11 @@ public class ClientUtil {
                 ThreadLocalRandom.current().nextLong(1, 11),
                 (byte) 0
         );
+    }
+
+
+    public static boolean nullCheck() {
+        return mc.player != null && mc.world != null;
     }
 
 

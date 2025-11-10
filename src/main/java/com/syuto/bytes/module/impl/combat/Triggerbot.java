@@ -44,10 +44,6 @@ public class Triggerbot extends Module {
     @EventHandler
     void onPreUpdate(PreUpdateEvent event) {
 
-        if (mc.options.forwardKey.wasPressed() && !mc.options.forwardKey.isPressed()) {
-           // mc.options.forwardKey.setPressed(true);
-        }
-
         HitResult hit = mc.crosshairTarget;
         if (hit.getType() == HitResult.Type.ENTITY) {
             entityHit = (EntityHitResult) hit;
@@ -56,7 +52,7 @@ public class Triggerbot extends Module {
                     case "1.8" -> {
                         if (shouldAttack) {
                             mc.interactionManager.cancelBlockBreaking();
-                            if (!mc.options.useKey.isPressed()) {
+                            if (!mc.options.useKey.isPressed() && mc.options.attackKey.isPressed()) {
                                 mc.interactionManager.attackEntity(mc.player, entityHit.getEntity());
                                 mc.player.swingHand(Hand.MAIN_HAND);
                             }

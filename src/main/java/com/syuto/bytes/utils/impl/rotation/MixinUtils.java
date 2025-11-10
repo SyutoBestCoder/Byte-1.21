@@ -22,13 +22,17 @@ public class MixinUtils {
     public static void turnHead(float yaw, LivingEntityRenderState state) {
         float f = MathHelper.wrapDegrees(yaw - state.bodyYaw);
         state.bodyYaw += f * 0.3f;
-        float h = 85.0f;
-        if (Math.abs(f) > h) {
-            state.bodyYaw += f - (float) MathHelper.sign(f) * h;
 
+        float h = 80.0f;
+        if (Math.abs(f) > h) {
+            state.bodyYaw += f - (float)MathHelper.sign((double)f) * h;
         }
-        state.yawDegrees = MathHelper.wrapDegrees(yaw - state.bodyYaw);
+
+        float headRotation = MathHelper.wrapDegrees(yaw - state.bodyYaw);
+        state.yawDegrees = headRotation;
 
     }
+
+
 
 }

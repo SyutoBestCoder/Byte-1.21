@@ -7,8 +7,12 @@ import com.syuto.bytes.module.Module;
 import com.syuto.bytes.module.api.Category;
 import com.syuto.bytes.setting.impl.ModeSetting;
 import com.syuto.bytes.setting.impl.NumberSetting;
+import com.syuto.bytes.utils.impl.client.ChatUtils;
 import com.syuto.bytes.utils.impl.player.MovementUtil;
 import com.syuto.bytes.utils.impl.player.PlayerUtil;
+import com.syuto.bytes.utils.impl.rotation.RotationUtils;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.util.math.Vec3d;
 
@@ -51,6 +55,8 @@ public class Flight extends Module {
 
     @EventHandler
     void onPreMotion(PreMotionEvent event) {
+        ticks = !mc.player.isOnGround() ? ticks + 1 : 0;
+
         double y;
 
         if (mc.options.jumpKey.isPressed()) {
@@ -75,14 +81,8 @@ public class Flight extends Module {
             }
 
             case "Spoof" -> {
-                event.onGround = true;
-                mc.player.setVelocity(motion.x, y, motion.z);
+                //mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
 
-                if (MovementUtil.isMoving()) {
-                    MovementUtil.setSpeed(speed.getValue().doubleValue());
-                } else {
-                    mc.player.setVelocity(0, y, 0);
-                }
             }
 
             case "Damage" -> {

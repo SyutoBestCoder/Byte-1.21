@@ -209,6 +209,80 @@ public class RenderUtils {
         postRender(vb, matrixStack);
     }
 
+    public static void renderp(Vec3d from, Vec3d to, RenderWorldEvent event, float delta) {
+        MatrixStack matrixStack = event.matrixStack;
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+
+        double camX = mc.gameRenderer.getCamera().getPos().x;
+        double camY = mc.gameRenderer.getCamera().getPos().y;
+        double camZ = mc.gameRenderer.getCamera().getPos().z;
+
+        // Reference: player's bounding box (for hitbox size)
+        Box box = mc.player.getBoundingBox();
+
+        // These represent how far the hitbox extends relative to the player's position
+        float offMinX = (float) (box.minX - mc.player.getX()) - 0.12f;
+        float offMaxX = (float) (box.maxX - mc.player.getX()) + 0.12f;
+        float offMinY = (float) (box.minY - mc.player.getY()) - 0.12f;
+        float offMaxY = (float) (box.maxY - mc.player.getY()) + 0.12f;
+        float offMinZ = (float) (box.minZ - mc.player.getZ()) - 0.12f;
+        float offMaxZ = (float) (box.maxZ - mc.player.getZ()) + 0.12f;
+
+        // Use the interpolated 'to' position (camera space)
+        float x = (float) (to.x - camX);
+        float y = (float) (to.y - camY);
+        float z = (float) (to.z - camZ);
+
+        // Apply the player's hitbox offsets to the interpolated position
+        float minX = x + offMinX;
+        float maxX = x + offMaxX;
+        float minY = y + offMinY;
+        float maxY = y + offMaxY;
+        float minZ = z + offMinZ;
+        float maxZ = z + offMaxZ;
+
+        BufferBuilder vb = getBufferBuilder(event.matrixStack, VertexFormat.DrawMode.QUADS);
+        preRender();
+
+        int r = 255, g = 255, b = 255, a = 75;
+
+        // Bottom face
+        vb.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
+
+        // Top face
+        vb.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
+
+        // Sides
+        vb.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
+
+        vb.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
+
+        vb.vertex(matrix, minX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, minY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, maxY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, minX, maxY, minZ).color(r, g, b, a);
+
+        vb.vertex(matrix, maxX, minY, minZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, minY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, maxZ).color(r, g, b, a);
+        vb.vertex(matrix, maxX, maxY, minZ).color(r, g, b, a);
+
+        postRender(vb, matrixStack);
+    }
+
+
 
     public static void renderHealth(Entity e, RenderWorldEvent event, float currentHealth, float maxHealth, float targetHealthRatio, float delta) {
         float h = (currentHealth / maxHealth);
@@ -262,7 +336,7 @@ public class RenderUtils {
                 (int) x,
                 (int) y,
                 color,
-                false
+                true
 
         );
 
@@ -344,6 +418,22 @@ public class RenderUtils {
         postRender(bufferBuilder, matrixStack);
     }
 
+
+    public static void drawLine(MatrixStack matrixStack, Vec3d start, Vec3d end, int color) {
+        Vec3d camPos = mc.gameRenderer.getCamera().getPos();
+        start = start.subtract(camPos);
+        end = end.subtract(camPos);
+
+        preRender();
+        BufferBuilder bufferBuilder = getBufferBuilder(matrixStack, VertexFormat.DrawMode.DEBUG_LINE_STRIP);
+
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+
+        bufferBuilder.vertex(matrix, (float) start.x, (float) start.y, (float) start.z).color(color);
+        bufferBuilder.vertex(matrix, (float) end.x, (float) end.y, (float) end.z).color(color);
+
+        postRender(bufferBuilder, matrixStack);
+    }
 
 
     public static void drawRectOutline2(MatrixStack matrixStack, float x, float y, float width, float height, int color) {

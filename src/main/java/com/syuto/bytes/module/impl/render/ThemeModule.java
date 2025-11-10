@@ -10,7 +10,6 @@ import java.awt.*;
 public class ThemeModule extends Module {
 
     public final ColorSetting accent = new ColorSetting("Accent", this, new Color(0, 160, 255));
-    public final ColorSetting secondary = new ColorSetting("Accent", this, new Color(0, 160, 255));
     public final ModeSetting theme = new ModeSetting("Theme", this, "Dark", "Light");
 
     public ThemeModule() {

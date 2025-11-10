@@ -8,7 +8,7 @@ import com.syuto.bytes.utils.impl.client.ChatUtils;
 
 public class AntiRacism extends Module {
     public AntiRacism() {
-        super("Anti racism", "FUCK RACISM", Category.PLAYER);
+        super("AntiRacism", "FUCK RACISM", Category.PLAYER);
     }
 
     static String[] racismList = new String[] {

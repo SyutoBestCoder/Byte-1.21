@@ -2,10 +2,7 @@ package com.syuto.bytes.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.syuto.bytes.Byte;
-import com.syuto.bytes.eventbus.impl.PreMotionEvent;
-import com.syuto.bytes.eventbus.impl.PreUpdateEvent;
-import com.syuto.bytes.eventbus.impl.RotationEvent;
-import com.syuto.bytes.eventbus.impl.SlowDownEvent;
+import com.syuto.bytes.eventbus.impl.*;
 import com.syuto.bytes.module.ModuleManager;
 import com.syuto.bytes.module.impl.movement.NoSlow;
 import com.syuto.bytes.module.impl.render.RenderingTest;
@@ -81,6 +78,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
     )
     public void start(CallbackInfo ci) {
         RotationUtils.setCamYaw(mc.player.getYaw());
+        RotationUtils.setCamPitch(mc.player.getPitch());
 
         RotationUtils.setLastRotationYaw(RotationUtils.getRotationYaw());
         RotationUtils.setLastRotationPitch(RotationUtils.getRotationPitch());
@@ -98,11 +96,12 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
         RotationUtils.setRotationYaw(rotationEvent.getYaw());
         RotationUtils.setRotationPitch(rotationEvent.getPitch());
 
-        //mc.player.setPitch(RotationUtils.getRotationPitch());
+
 
         RenderingTest test = ModuleManager.getModule(RenderingTest.class);
         if (test != null && test.isEnabled()) {
             mc.player.setYaw(RotationUtils.getRotationYaw());
+           // mc.player.setPitch(RotationUtils.getRotationPitch());
         }
     }
 
@@ -115,8 +114,10 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
         RenderingTest test = ModuleManager.getModule(RenderingTest.class);
         if (test != null && test.isEnabled()) {
             mc.player.setYaw(RotationUtils.getCamYaw());
+           // mc.player.setPitch(RotationUtils.getCamPitch());
         }
     }
+
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V"), method = "tick")
     public void onPreUpdate(CallbackInfo ci) {
 
@@ -182,6 +183,8 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
             this.lastHorizontalCollision = event.horizontalCollision;
             this.autoJumpEnabled = (Boolean)this.client.options.getAutoJump().getValue();
         }
+        PostMotionEvent eventt = new PostMotionEvent();
+        Byte.INSTANCE.eventBus.post(eventt);
     }
 
 

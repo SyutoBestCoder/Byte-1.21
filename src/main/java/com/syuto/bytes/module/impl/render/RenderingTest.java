@@ -24,7 +24,10 @@ public class RenderingTest extends Module {
 
     @EventHandler
     public void onRenderTick(RenderTickEvent event) {
-        mc.player.renderYaw = RotationUtils.getCamYaw();
+        if (RotationUtils.yawChanged) {
+            mc.player.renderYaw = RotationUtils.getCamYaw();
+        }
+        //mc.player.renderPitch = RotationUtils.getCamPitch();
     }
 
 }

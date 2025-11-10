@@ -1,23 +1,16 @@
 package com.syuto.bytes.mixin;
 
 
-import com.syuto.bytes.eventbus.impl.PreMotionEvent;
 import com.syuto.bytes.module.ModuleManager;
-import com.syuto.bytes.module.impl.player.Scaffold;
+import com.syuto.bytes.module.impl.combat.Velocity;
 import com.syuto.bytes.module.impl.render.RenderingTest;
-import com.syuto.bytes.utils.impl.rotation.MixinUtils;
 import com.syuto.bytes.utils.impl.rotation.RotationUtils;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import static com.syuto.bytes.Byte.mc;
@@ -35,7 +28,7 @@ public abstract class EntityMixin {
 
     @ModifyArgs(method = "pushAwayFrom(Lnet/minecraft/entity/Entity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;addVelocity(DDD)V"))
     private void onPushAwayFrom(Args args, Entity entity) {
-        Scaffold test = ModuleManager.getModule(Scaffold.class);
+        Velocity test = ModuleManager.getModule(Velocity.class);
         if (test != null && test.isEnabled()) {
             if ((Object) this == mc.player) {
                 args.set(0, (double) args.get(0) * 0);

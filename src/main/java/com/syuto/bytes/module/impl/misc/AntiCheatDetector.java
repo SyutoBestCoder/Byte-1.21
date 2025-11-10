@@ -19,7 +19,7 @@ public class AntiCheatDetector extends Module {
     private boolean capturing;
 
     public AntiCheatDetector() {
-        super("AntiCheatDetector", "Detects the server anti-cheat", Category.EXPLOIT);
+        super("AntiCheatDetect", "Detects the server anti-cheat", Category.EXPLOIT);
     }
 
     @Override

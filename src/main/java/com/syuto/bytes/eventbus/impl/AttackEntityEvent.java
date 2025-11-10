@@ -8,13 +8,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class AttackEntityEvent implements Event {
     @Getter
+    private final AttackEntityEvent.Mode mode;
+    @Getter
     private Entity target;
 
     @Getter
     @Setter
     private boolean cancelled;
 
-    public AttackEntityEvent(Entity target) {
+    public AttackEntityEvent(Mode mode, Entity target) {
+        this.mode = mode;
         this.target = target;
+    }
+
+
+    public enum Mode {
+        Pre, Post
     }
 }

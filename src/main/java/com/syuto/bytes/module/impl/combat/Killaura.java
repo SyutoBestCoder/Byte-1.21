@@ -1,22 +1,19 @@
 package com.syuto.bytes.module.impl.combat;
 
-import com.syuto.bytes.Byte;
 import com.syuto.bytes.eventbus.EventHandler;
 import com.syuto.bytes.eventbus.impl.*;
 import com.syuto.bytes.mixin.SendPacketMixinAccessor;
 import com.syuto.bytes.module.Module;
 import com.syuto.bytes.module.ModuleManager;
 import com.syuto.bytes.module.api.Category;
-import com.syuto.bytes.module.impl.player.Scaffold;
+import com.syuto.bytes.module.impl.player.scaffold.Scaffold;
 import com.syuto.bytes.setting.impl.ModeSetting;
 import com.syuto.bytes.setting.impl.NumberSetting;
 import com.syuto.bytes.utils.impl.client.ChatUtils;
-import com.syuto.bytes.utils.impl.player.MovementUtil;
 import com.syuto.bytes.utils.impl.player.PlayerUtil;
 import com.syuto.bytes.utils.impl.render.AnimationUtils;
 import com.syuto.bytes.utils.impl.render.RenderUtils;
 import com.syuto.bytes.utils.impl.rotation.RotationUtils;
-import dev.blend.util.render.DrawUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,14 +22,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-
-import static com.syuto.bytes.Byte.mc;
 
 
 public class Killaura extends Module {
@@ -42,7 +35,7 @@ public class Killaura extends Module {
     private final NumberSetting aps = new NumberSetting("APS", this, 10, 1, 20, 1);
     private final NumberSetting reach = new NumberSetting("Reach", this, 6, 1, 8, 0.5);
     private final NumberSetting swing = new NumberSetting("Swing range", this, 6, 1, 8, 0.5);
-    private final ModeSetting autoBlock = new ModeSetting("Autoblock", this, "None", "Watchdog", "Fake", "Vanilla");
+    private final ModeSetting autoBlock = new ModeSetting("Autoblock", this, "None", "Fake", "Vanilla");
 
     private long lastSwitchTime, attackDelay, lastAttackTime;
     private final List<PlayerEntity> targets = new ArrayList<>();
@@ -319,17 +312,9 @@ public class Killaura extends Module {
         if (canSwing(target) && mc.player.getAttackCooldownProgress(0.5f) >= 1.0) { //shouldAttack mc.player.getAttackCooldownProgress(0.5f) >= 1.0
 
             handleAutoBlock();
+
             mc.interactionManager.attackEntity(mc.player, target);
-            /*mc.getNetworkHandler().sendPacket(
-                    PlayerInteractEntityC2SPacket.interactAt(
-                            r.getEntity(),
-                            mc.player.isSneaking(),
-                            Hand.MAIN_HAND,
-                            new Vec3d(0, 0, 0)
-                    )
-            );*/
-            //mc.interactionManager.interactEntity(mc.player, target, Hand.MAIN_HAND);
-            mc.player.swingHand(mc.player.getActiveHand());
+            mc.player.swingHand(Hand.MAIN_HAND);
             shouldAttack = false;
         }
     }

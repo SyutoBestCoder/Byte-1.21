@@ -20,13 +20,23 @@ public class ClientPlayerInteractionManagerMixin {
             cancellable = true
     )
     private void attackEntity(PlayerEntity player, Entity target, CallbackInfo ci) {
-        AttackEntityEvent event = new AttackEntityEvent(target);
+        AttackEntityEvent event = new AttackEntityEvent(AttackEntityEvent.Mode.Pre, target);
         Byte.INSTANCE.eventBus.post(event);
 
         if (event.isCancelled()) {
             ci.cancel();
         }
     }
+
+    @Inject(
+            method = "attackEntity",
+            at = @At("TAIL")
+    )
+    private void attackEntityPost(PlayerEntity player, Entity target, CallbackInfo ci) {
+        AttackEntityEvent event = new AttackEntityEvent(AttackEntityEvent.Mode.Post, target);
+        Byte.INSTANCE.eventBus.post(event);
+    }
+
 
 }
 

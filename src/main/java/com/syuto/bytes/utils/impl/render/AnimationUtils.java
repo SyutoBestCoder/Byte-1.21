@@ -5,6 +5,7 @@ import com.syuto.bytes.module.impl.render.Animations;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -22,6 +23,10 @@ public class AnimationUtils {
     @Setter
     @Getter
     public static boolean isBlocking;
+
+    @Setter
+    @Getter
+    public static ItemStack spoofedItem;
 
     public static float height = -0.1f;
 

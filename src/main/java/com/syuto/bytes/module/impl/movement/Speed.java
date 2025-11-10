@@ -1,6 +1,7 @@
 package com.syuto.bytes.module.impl.movement;
 
 import com.syuto.bytes.eventbus.EventHandler;
+import com.syuto.bytes.eventbus.impl.PostMotionEvent;
 import com.syuto.bytes.eventbus.impl.PreMotionEvent;
 import com.syuto.bytes.eventbus.impl.PreUpdateEvent;
 import com.syuto.bytes.module.Module;
@@ -17,6 +18,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +38,7 @@ public class Speed extends Module {
             this,
             "Watchdog",
             "Verus",
-            "NCP",
+            "Grim",
             "Custom"
     );
 
@@ -76,7 +78,8 @@ public class Speed extends Module {
 
     @EventHandler
     void onPreMotion(PreMotionEvent event) {
-        boolean ground = mc.player.isOnGround();
+        boolean ground = event.onGround;
+        Vec3d motion = mc.player.getVelocity();
 
         this.ground = !ground ? this.ground + 1 : 0;
 
@@ -89,48 +92,76 @@ public class Speed extends Module {
                 setSpeed(2f);
             }
             case "Verus" -> {
-                if (mc.player.isOnGround()) {
-                    if (mc.player.horizontalCollision) {
-                        setMotY(0.42f);
-                    } else {
-                        setMotY(0.05);
-                    }
-                }
+
+                jump();
 
                 switch(this.ground) {
-
                     case 1 -> {
-                        if (!mc.player.horizontalCollision) {
-                            setMotY(-0.8f);
+                    }
+
+                    case 2 -> {
+                        if (!mc.player.horizontalCollision) {;
+                            //mc.player.setVelocity(motion.x * 1.45, motion.y, motion.z * 1.45);
                         }
                     }
-
-                    case 3 -> {
-                        setMotY(-0.3f);
-                    }
-
-
                 }
-                setSpeed(1f);
                 if (Killaura.target != null && mc.options.jumpKey.isPressed()) {
-                    setStafe(Killaura.target);
+                    //setStafe(Killaura.target);
                 }
-            }
-            case "NCP" -> {
-                jump();
-                switch(this.ground) {
-                }
-                setSpeed(0.26f);
             }
 
             case "Custom" -> {
+                double speed = 0.06 + (mc.player.isOnGround() ? 0.12 : 0.21) + mc.player.getVelocity().y / 20;
                 jump();
-                setSpeed(speed.getValue().doubleValue());
+
+                if (this.ground == 4) {
+
+                    setMotY(-0.09800000190734863);
+                }
+
+                if (!mc.player.isOnGround() && MovementUtil.isMoving()) {
+                    MovementUtil.setSpeed(speed);
+                }
+
+            }
+
+            case "Grim" -> {
+
+                if (mc.player.input.movementForward == 0 && mc.player.input.movementSideways == 0) return;
+
+
+                if (mc.player.isOnGround() && MovementUtil.isMoving()) {
+                    mc.options.jumpKey.setPressed(true);
+                    mc.player.jump();
+                } else {
+                    mc.options.jumpKey.setPressed(false);
+                }
+                if (mc.player.isOnGround()) {
+                    mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+                }
+
             }
 
         }
     }
 
+
+    @EventHandler
+    public void onPostMotion(PostMotionEvent event) {
+        switch (modes.getValue()) {
+            case "Grim" -> {
+                if (mc.player.isOnGround()) {
+                    mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+                }
+
+                if (!mc.player.isOnGround() && this.ground >= 0) {
+                    mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+                }
+                mc.player.setSneaking(false);
+            }
+        }
+
+    }
 
     void setStafe(Entity target) {
         double centerX = target.getX();
@@ -165,9 +196,7 @@ public class Speed extends Module {
 
     private void setY(double y) {
         Vec3d motion = mc.player.getVelocity();
-        if (mc.player.isOnGround()) {
-            mc.player.setVelocity(motion.x, y, motion.z);
-        }
+        mc.player.setVelocity(motion.x, motion.y - y, motion.z);
     }
 
     private void setMotY(double y) {

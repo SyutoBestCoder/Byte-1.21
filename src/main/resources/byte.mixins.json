@@ -26,6 +26,7 @@
     "SendPacketMixin",
     "SendPacketMixinAccessor",
     "SoundManagerMixin",
-    "TextRendererMixin"
+    "TextRendererMixin",
+    "DownloaderMixin"
   ]
 }

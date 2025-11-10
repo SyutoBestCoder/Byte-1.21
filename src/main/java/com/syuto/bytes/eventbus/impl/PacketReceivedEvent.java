@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.minecraft.network.packet.Packet;
 
 public class PacketReceivedEvent implements Event {
-
+    @Setter
     private Packet<?> packet;
     @Setter
     private boolean canceled;

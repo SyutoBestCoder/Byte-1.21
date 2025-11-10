@@ -1,11 +1,11 @@
 {
 	"schemaVersion": 1,
-	"id": "byte",
+	"id": "visuality",
 	"version": "${version}",
-	"name": "byte",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Visuality",
+	"description": "Little visual improvements by adding a bunch of new particles.",
 	"authors": [
-		"Me!"
+		"PinkGoosik"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",

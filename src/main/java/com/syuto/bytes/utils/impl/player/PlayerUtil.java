@@ -109,7 +109,7 @@ public class PlayerUtil {
     public static boolean isHoldingWeapon() {
         if (mc.player.getMainHandStack() != null) {
             Item item = mc.player.getMainHandStack().getItem();
-            return item instanceof SwordItem || item instanceof AxeItem || item instanceof MaceItem;
+            return item instanceof SwordItem || item instanceof AxeItem;
         }
         return false;
     }

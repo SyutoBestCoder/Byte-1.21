@@ -91,22 +91,23 @@ public class WorldUtil {
     }
 
 
+    public static boolean canPlace(BlockPos position) {
+        BlockState state =  mc.world.getBlockState(position);
+        return state != null && state.isReplaceable();
+    }
+
 
 
     public static boolean canBePlacedOn(BlockPos blockPos) {
         if (blockPos == null || mc.player == null || mc.world == null) return false;
 
-        // Full cube bounding box of the block
         Box blockBox = new Box(blockPos);
 
-        // If player is inside the block’s bounding box → don’t place
         if (mc.player.getBoundingBox().intersects(blockBox)) {
             return false;
         }
 
         BlockState state = mc.world.getBlockState(blockPos);
-
-        // A valid placement surface = block is solid and not air
         return state != null && state.isSolidBlock(mc.world, blockPos) && !state.isAir();
     }
 

@@ -23,7 +23,7 @@ public class RotationUtils {
 
     @Setter
     @Getter
-    public static float rotationYaw, rotationPitch, lastRotationYaw, lastRotationPitch, camYaw;
+    public static float rotationYaw, rotationPitch, lastRotationYaw, lastRotationPitch, camYaw, camPitch;
 
 
     public static float[] getFixedRotation(float[] rotations, float[] lastRotations) {
@@ -107,8 +107,30 @@ public class RotationUtils {
                         )
                 )
         );
+
         return new float[]{yaw, clampPitch(pitch)};
     }
+
+    public static float[] getBlockRotations(BlockPos blockPos, Vec3d hitVec, Direction facing) {
+        Vec3d direction = hitVec.subtract(mc.player.getEyePos());
+
+        float yaw = (float) Math.toDegrees(
+                Math.atan2(
+                        -direction.x,
+                        direction.z
+                )
+        );
+
+        float pitch = (float) Math.toDegrees(
+                Math.atan2(
+                        -direction.y,
+                        Math.hypot(direction.x, direction.z)
+                )
+        );
+
+        return new float[]{yaw, clampPitch(pitch)};
+    }
+
 
     private static float clampPitch(float pitch) {
         return MathHelper.clamp(pitch, -90.0F, 90.0F);
