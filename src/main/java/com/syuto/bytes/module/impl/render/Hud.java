@@ -6,6 +6,7 @@ import com.syuto.bytes.eventbus.impl.RenderTickEvent;
 import com.syuto.bytes.module.Module;
 import com.syuto.bytes.module.ModuleManager;
 import com.syuto.bytes.module.api.Category;
+import com.syuto.bytes.setting.impl.ModeSetting;
 import com.syuto.bytes.utils.impl.render.RenderUtils;
 import dev.blend.util.render.Alignment;
 import dev.blend.util.render.DrawUtil;
@@ -29,6 +30,8 @@ import static com.syuto.bytes.Byte.mc;
 public class Hud extends Module {
     public static HashMap<String, String> modules = new HashMap<>();
     public List<Module> sortedModules = List.of();
+    public ModeSetting modes = new ModeSetting("ColorMode", this, "White", "Red", "TransFlag");
+    private String colorstuff;
 
     public Hud() {
         super("Hud", "hud bro", Category.RENDER);
@@ -43,6 +46,23 @@ public class Hud extends Module {
             new Color(255, 255, 255),
             new Color(245, 169, 184)
             //new Color(85, 205, 252)
+    );
+
+
+    private List<Color> whiteColors = Arrays.asList(
+            new Color(255, 255, 255),
+            new Color(255, 255, 255),
+            new Color(255, 255, 255),
+            new Color(255, 255, 255),
+            new Color(255, 255, 255)
+    );
+
+    private List<Color> redColors = Arrays.asList(
+            new Color(255, 0, 0),
+            new Color(200, 0, 0),
+            new Color(150, 0, 0),
+            new Color(100, 0, 0),
+            new Color(50, 0, 0)
     );
 
 
@@ -73,20 +93,28 @@ public class Hud extends Module {
         int yPosition = 1;
         int colorIndex = 0;
 
+        List<Color> activeColors;
 
-
-        //matrices.push();
-        //DrawUtil.begin();
+        if (modes.getValue().equals("White")) {
+            activeColors = whiteColors;
+        } else if (modes.getValue().equals("Red")) {
+            activeColors = redColors;
+        } else if (modes.getValue().equals("TransFlag")) {
+            activeColors = transFlagColors;
+        } else {
+            activeColors = whiteColors;
+        }
 
         for (Module mod : sortedModules) {
             String moduleName = mod.getName();
             Module module = ModuleManager.getModule(moduleName.toLowerCase());
             if (module != null) {
                 String suffix = module.getSuffix();
-                String displayText = suffix.isEmpty() ? moduleName : moduleName + Formatting.GRAY + " " + suffix;
+                String displayText = suffix.isEmpty()
+                        ? moduleName
+                        : moduleName + Formatting.GRAY + " " + suffix;
 
-                Color currentColor = transFlagColors.get(colorIndex % transFlagColors.size());
-
+                Color currentColor = activeColors.get(colorIndex % activeColors.size());
                 int textWidth = mc.textRenderer.getWidth(displayText);
                 int xPosition = screenWidth - textWidth - 2;
 
@@ -96,28 +124,11 @@ public class Hud extends Module {
                         xPosition,
                         yPosition,
                         currentColor.getRGB()
-
                 );
+
                 yPosition += mc.textRenderer.fontHeight + 3;
                 colorIndex++;
             }
         }
-
-        //Vec3d pos = mc.player.getPos();
-        //String text = String.format("%.1f", pos.x) + " X " + String.format("%.1f", pos.y) + " Y " + String.format("%.1f", pos.x) + " Z";
-
-        /*RenderUtils.drawText(
-                event.context,
-                text,
-                10,
-                10,
-                cyan.getRGB()
-
-        );*/
-
-
-        //DrawUtil.end();
-        //matrices.pop();
     }
 }
-
